@@ -1,0 +1,3 @@
+language = Objective-C
+package = io.github.native.kfirebase_crashlytics
+headers = /Users/michelleraouf/Desktop/kmm/KFirebaseCrashlytics/KFirebaseCrashlytics/src/interop/libs/macos-arm64_x86_64/FirebaseCrashlytics.framework/Headers/FirebaseCrashlytics.h
