@@ -4,9 +4,8 @@ import io.github.native.kfirebase_crashlytics.FIRCrashlytics
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.UnsafeNumber
 import platform.Foundation.NSError
-import platform.Foundation.NSException
 import platform.Foundation.NSLocalizedDescriptionKey
-import com.rickclephas.kmp.nsexceptionkt.core.asNSException
+
 @OptIn(ExperimentalForeignApi::class)
 actual class KFirebaseCrashlytics {
     private val firCrashlytics = FIRCrashlytics.crashlytics()
@@ -18,8 +17,35 @@ actual class KFirebaseCrashlytics {
 
     }
 
+    @OptIn(UnsafeNumber::class)
     actual fun recordException(throwable: Throwable) {
-     firCrashlytics.recordError(throwable)
+        val nsError = NSError.errorWithDomain(
+            domain = "io.github.kfirebase_crashlytics", // يمكنك تخصيص الدومين
+            code = 0,
+            userInfo = mapOf(
+                NSLocalizedDescriptionKey to throwable.message.orEmpty()
+            )
+        )
+
+        firCrashlytics.recordError(nsError)
+    }
+
+    @OptIn(UnsafeNumber::class)
+    actual fun trackHandledException(throwable: Throwable) {
+        val message = "🔥 Critical non-fatal exception: ${throwable.message}"
+        FIRCrashlytics.crashlytics().log(message)
+
+        FIRCrashlytics.crashlytics().setCustomValue("fatal-level", forKey = "severity")
+        FIRCrashlytics.crashlytics()
+            .setCustomValue(throwable::class.simpleName ?: "Unknown", forKey = "exception_type")
+
+        // Create NSError from exception manually
+        val nsError = NSError.errorWithDomain(
+            domain = "io.github.kfirebase_crashlytics",  // ← غيّر الـ domain حسب تطبيقك
+            code = 0,
+            userInfo = mapOf("message" to (throwable.message ?: "unknown"))
+        )
+        FIRCrashlytics.crashlytics().recordError(nsError)
     }
 
     actual fun setUserId(userId: String) {
@@ -80,5 +106,7 @@ actual class KFirebaseCrashlytics {
     actual fun deleteUnsentReports() {
         firCrashlytics.deleteUnsentReports()
     }
+
+
 }
 

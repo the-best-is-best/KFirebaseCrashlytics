@@ -12,6 +12,11 @@ actual class KFirebaseCrashlytics {
         fireCrashlytics.recordException(throwable)
     }
 
+
+    actual fun trackHandledException(throwable: Throwable) {
+
+    }
+
     actual fun setUserId(userId: String) {
         fireCrashlytics.setUserId(userId)
     }
@@ -69,4 +74,5 @@ actual class KFirebaseCrashlytics {
     actual fun deleteUnsentReports() {
         fireCrashlytics.deleteUnsentReports()
     }
+
 }

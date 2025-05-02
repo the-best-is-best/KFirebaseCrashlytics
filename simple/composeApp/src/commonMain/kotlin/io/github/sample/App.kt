@@ -14,13 +14,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import co.touchlab.crashkios.crashlytics.CrashlyticsKotlin
+import io.github.kfirebase_crashlytics.KFirebaseCrashlytics
 import io.github.sample.theme.AppTheme
 
 @Composable
 internal fun App() = AppTheme {
-//    val firCrashlytics = KFirebaseCrashlytics()
+    val firCrashlytics = KFirebaseCrashlytics()
     LaunchedEffect(Unit){
-
+        firCrashlytics.setCrashlyticsCollectionEnabled(true)
     }
     Column(
         modifier = Modifier
@@ -44,7 +46,7 @@ internal fun App() = AppTheme {
 
         ElevatedButton(
             onClick = {
-              //  firCrashlytics.log("Button clicked")
+                firCrashlytics.log("Test Log")
             }
         ){
             Text("Log")
@@ -52,18 +54,36 @@ internal fun App() = AppTheme {
 
         ElevatedButton(
             onClick = {
-               // firCrashlytics.setUserId("123456")
+                firCrashlytics.setUserId("123456")
             }
         ){
             Text("Set User ID")
         }
         ElevatedButton(
             onClick = {
-                //  firCrashlytics.recordException(Exception("Test Exception"))
+                firCrashlytics.recordException(Exception("Test Exception"))
             }
         )
         {
             Text("Record Exception")
+        }
+
+        ElevatedButton(
+            onClick = {
+                firCrashlytics.trackHandledException(Exception("Test Handled Exception"))
+            }
+        )
+        {
+            Text("Record Exception with trackHandled")
+        }
+
+        ElevatedButton(
+            onClick = {
+                CrashlyticsKotlin.sendHandledException(Exception("kotlin exception"))
+            }
+        )
+        {
+            Text("Record Exception with crashlytics iso")
         }
     }
 }

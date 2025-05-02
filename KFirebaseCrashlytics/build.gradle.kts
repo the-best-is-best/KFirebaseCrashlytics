@@ -2,16 +2,8 @@
 
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
-import org.jetbrains.compose.ExperimentalComposeLibrary
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
-import java.io.File
 
 plugins {
     alias(libs.plugins.multiplatform)
@@ -180,6 +172,7 @@ kotlin {
 //            implementation(compose.components.uiToolingPreview)
               api(libs.kfirebase.core)
            // implementation(libs.crashlytics)
+            api(libs.touchlab.crashlytics)
 
         }
 
@@ -196,6 +189,7 @@ kotlin {
             implementation(libs.firebase.crashlytics)
             implementation(libs.firebase.common.ktx)
 
+
         }
 
 //        jvmMain.dependencies {
@@ -207,7 +201,6 @@ kotlin {
 //        }
 
         appleMain.dependencies {
-            implementation("com.rickclephas.kmp:nsexception-kt-core:0.1.17")
 
         }
 

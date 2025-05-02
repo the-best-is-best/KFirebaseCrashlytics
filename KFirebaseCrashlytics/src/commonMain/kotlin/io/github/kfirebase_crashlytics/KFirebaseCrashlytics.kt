@@ -9,6 +9,7 @@ internal fun x(): CrashlyticsKotlin {
 expect class KFirebaseCrashlytics() {
     fun log(message: String)
     fun recordException(throwable: Throwable)
+    fun trackHandledException(throwable: Throwable)
     fun setUserId(userId: String)
     fun setCustomKey(key: String, value: String)
     fun setCustomKey(key: String, value: Boolean)

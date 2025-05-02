@@ -1,7 +1,7 @@
 import UIKit
 import ComposeApp
 import FirebaseCore
-
+import Firebase
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,27 +17,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         // Configure Firebase
         FirebaseApp.configure()
+        Analytics.setAnalyticsCollectionEnabled(true)
         
         // Create window and root view controller
         window = UIWindow(frame: UIScreen.main.bounds)
         if let window = window {
             window.rootViewController = MainKt.MainViewController()
             window.makeKeyAndVisible()
+
         }
 
         return true
     }
 }
-
-class NSExceptionWrapper: NSObject {
-    private let exception: NSException
-    
-    init(exception: NSException) {
-        self.exception = exception
-    }
-    
-    // Implementing KotlinThrowable properties
-    var message: String? {
-        return exception.reason
-    }
-    }
