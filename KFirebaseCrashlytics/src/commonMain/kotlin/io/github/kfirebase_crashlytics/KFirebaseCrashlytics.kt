@@ -1,10 +1,5 @@
 package io.github.kfirebase_crashlytics
 
-import co.touchlab.crashkios.crashlytics.CrashlyticsKotlin
-
-internal fun x(): CrashlyticsKotlin {
-   return CrashlyticsKotlin
-}
 
 expect class KFirebaseCrashlytics() {
     fun log(message: String)
