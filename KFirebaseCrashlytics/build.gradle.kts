@@ -1,21 +1,14 @@
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
-
 import com.vanniktech.maven.publish.SonatypeHost
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 
 plugins {
-    alias(libs.plugins.multiplatform)
-//    alias(libs.plugins.compose.compiler)
-//    alias(libs.plugins.compose)
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlinMultiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
+
     id("maven-publish")
     id("signing")
     alias(libs.plugins.maven.publish)
 }
-
-
 
 
 apply(plugin = "maven-publish")
@@ -37,6 +30,7 @@ tasks.withType<PublishToMavenRepository> {
 }
 
 
+
 extra["packageNameSpace"] = "io.github.kfirebase_crashlytics"
 extra["groupId"] = "io.github.the-best-is-best"
 extra["artifactId"] = "kfirebase-crashlytics"
@@ -51,6 +45,7 @@ extra["connectionGit"] = "https://github.com/the-best-is-best/KFirebaseCrashlyti
 extra["developerName"] = "Michelle Raouf"
 extra["developerNameId"] = "MichelleRaouf"
 extra["developerEmail"] = "eng.michelle.raouf@gmail.com"
+
 
 
 mavenPublishing {
@@ -93,6 +88,7 @@ mavenPublishing {
 }
 
 
+
 signing {
     useGpgCmd()
     sign(publishing.publications)
@@ -100,25 +96,26 @@ signing {
 
 val packageNameSpace = extra["packageNameSpace"].toString()
 val packageName = extra["packageName"].toString()
+
 kotlin {
-    jvmToolchain(17)
-    androidTarget {
-        //https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-test.html
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
+
+
+    // Target declarations - add or remove as needed below. These define
+    // which platforms this KMP module supports.
+    // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
+    androidLibrary {
+        namespace = "io.github.kfirebase_crashlytics"
+        compileSdk = 35
+        minSdk = 21
     }
 
-//    jvm()
-//
-//    js {
-//        browser()
-//        binaries.executable()
-//    }
-//
-//    @OptIn(ExperimentalWasmDsl::class)
-//    wasmJs {
-//        browser()
-//         binaries.executable()
-//    }
+    // For iOS targets, this is also where you should
+    // configure native binary output. For more information, see:
+    // https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
+
+    // A step-by-step guide on how to include this library in an XCode
+    // project can be found here:
+    // https://developer.android.com/kotlin/multiplatform/migrate
     listOf(
         iosX64(),
         iosArm64(),
@@ -132,8 +129,6 @@ kotlin {
     ).forEach { target ->
         target.binaries.framework {
             baseName = packageName
-            isStatic = true
-            export(libs.firebase.crashlytics)
         }
 
         // Configure cinterop for each target
@@ -163,99 +158,53 @@ kotlin {
         }
     }
 
+
+    // Source set declarations.
+    // Declaring a target automatically creates a source set with the same name. By default, the
+    // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
+    // common to share sources between related targets.
+    // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
-        commonMain.dependencies {
-//            implementation(compose.runtime)
-//            implementation(compose.foundation)
-//            implementation(compose.material3)
-//            implementation(compose.components.resources)
-//            implementation(compose.components.uiToolingPreview)
-              api(libs.kfirebase.core)
-           // implementation(libs.crashlytics)
-            api(libs.touchlab.crashlytics)
+        commonMain {
+            dependencies {
+                implementation(libs.kotlin.stdlib)
+                // Add KMP dependencies here
+                api(libs.kfirebase.core)
+                api(libs.touchlab.crashlytics)
 
+            }
         }
 
-        commonTest.dependencies {
-            implementation(kotlin("test"))
-//            @OptIn(ExperimentalComposeLibrary::class)
-//            implementation(compose.uiTest)
+        commonTest {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
         }
 
-        androidMain.dependencies {
-//            implementation(compose.uiTooling)
-//            implementation(libs.androidx.activityCompose)
-            implementation(project.dependencies.platform(libs.firebase.bom))
-            implementation(libs.firebase.crashlytics)
-            implementation(libs.firebase.common.ktx)
-
-
+        androidMain {
+            dependencies {
+                // Add Android-specific dependencies here. Note that this source set depends on
+                // commonMain by default and will correctly pull the Android artifacts of any KMP
+                // dependencies declared in commonMain.
+                implementation(project.dependencies.platform(libs.firebase.bom))
+                implementation(libs.firebase.crashlytics)
+                implementation(libs.firebase.common.ktx)
+            }
         }
 
-//        jvmMain.dependencies {
-//            implementation(compose.desktop.currentOs)
-//        }
-//
-//        jsMain.dependencies {
-//            implementation(compose.html.core)
-//        }
-
-        appleMain.dependencies {
-
+        appleMain {
+            dependencies {
+                // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
+                // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
+                // part of KMP’s default source set hierarchy. Note that this source set depends
+                // on common by default and will correctly pull the iOS artifacts of any
+                // KMP dependencies declared in commonMain.
+            }
         }
-
     }
+
 }
 
-
-android {
-    namespace = extra["packageNameSpace"].toString()
-    compileSdk = 35
-
-    defaultConfig {
-        minSdk = 21
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
-        }
-//        buildFeatures {
-//            //enables a Compose tooling support in the AndroidStudio
-//            compose = true
-//        }
-    }
-}
-
-//https://developer.android.com/develop/ui/compose/testing#setup
-dependencies {
-    androidTestImplementation(libs.androidx.uitest.junit4)
-    debugImplementation(libs.androidx.uitest.testManifest)
-    //temporary fix: https://youtrack.jetbrains.com/issue/CMP-5864
-    androidTestImplementation("androidx.test:monitor") {
-        version { strictly("1.6.1") }
-    }
-}
-//compose.desktop {
-//    application {
-//        mainClass = "MainKt"
-//
-//        nativeDistributions {
-//            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-//            packageName = packageNameSpace
-//            packageVersion = "1.0.0"
-//
-//            linux {
-//                iconFile.set(project.file("desktopAppIcons/LinuxIcon.png"))
-//            }
-//            windows {
-//                iconFile.set(project.file("desktopAppIcons/WindowsIcon.ico"))
-//            }
-//            macOS {
-//                iconFile.set(project.file("desktopAppIcons/MacosIcon.icns"))
-//                bundleID = "org.company.app.desktopApp"
-//            }
-//        }
-//    }
-//}
 
 abstract class GenerateDefFilesTask : DefaultTask() {
 
@@ -323,8 +272,4 @@ abstract class GenerateDefFilesTask : DefaultTask() {
 tasks.register<GenerateDefFilesTask>("generateDefFiles") {
     packageName.set("io.github.native.kfirebase_crashlytics")
     interopDir.set(project.layout.projectDirectory.dir("src/interop"))
-}
-
-tasks.named("build") {
-    dependsOn(tasks.named("generateDefFiles"))
 }
