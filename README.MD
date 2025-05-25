@@ -29,11 +29,11 @@ KFirebaseCrashlytics is available on `mavenCentral()`.
 
 ```kotlin
 commonMain.dependencies {
-            implementation(projects.kFirebaseCrashlytics)
+    implementation("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0")
     ...
 }
 appleMain.dependencies{
-                api(projects.kFirebaseCrashlytics)
+                api("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0")
 
 }
  listOf(
@@ -44,7 +44,7 @@ appleMain.dependencies{
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            export(projects.kFirebaseCrashlytics) //  need this
+            export("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0") //  need this
         }
     }
 ```
