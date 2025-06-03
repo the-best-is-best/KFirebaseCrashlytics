@@ -1,6 +1,6 @@
 [versions]
-agp = "8.9.3"
-android-compileSdk = "35"
+agp = "8.10.1"
+android-compileSdk = "36"
 android-minSdk = "21"
 android-targetSdk = "35"
 androidx-activity = "1.10.1"
@@ -10,18 +10,17 @@ androidx-core = "1.16.0"
 androidx-espresso = "3.6.1"
 androidx-lifecycle = "2.9.0"
 androidx-testExt = "1.2.1"
-composeMultiplatform = "1.7.3"
+composeMultiplatform = "1.8.1"
 junit = "4.13.2"
-kotlin = "2.1.20"
+kotlin = "2.1.21"
 
-maven-publish = "0.31.0"
+maven-publish = "0.32.0"
 firebaseCommonKtx = "21.0.0"
-firebaseBom = "33.13.0"
 crashlytics = "0.9.0"
-kfirebaseCore = "1.2.0"
-kotlinStdlib = "2.1.20"
+kfirebaseCore = "1.2.1"
 runner = "1.6.2"
 core = "1.6.1"
+
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -40,10 +39,10 @@ kfirebase-analytics = { module = "io.github.the-best-is-best:kfirebase-analytics
 kfirebase-core = { module = "io.github.the-best-is-best:kfirebase-core", version.ref = "kfirebaseCore" }
 firebase-common-ktx = { group = "com.google.firebase", name = "firebase-common-ktx", version.ref = "firebaseCommonKtx" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
-kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
 androidx-runner = { group = "androidx.test", name = "runner", version.ref = "runner" }
 androidx-core = { group = "androidx.test", name = "core", version.ref = "core" }
+
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }

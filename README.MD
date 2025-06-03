@@ -29,11 +29,11 @@ KFirebaseCrashlytics is available on `mavenCentral()`.
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0")
+    implementation("io.github.the-best-is-best:kfirebase-crashlytics:1.1.1")
     ...
 }
 appleMain.dependencies{
-                api("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0")
+    api("io.github.the-best-is-best:kfirebase-crashlytics:1.1.1")
 
 }
  listOf(
@@ -44,7 +44,7 @@ appleMain.dependencies{
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            export("io.github.the-best-is-best:kfirebase-crashlytics:1.1.0") //  need this
+            export("io.github.the-best-is-best:kfirebase-crashlytics:1.1.1") //  need this
         }
     }
 ```
@@ -64,6 +64,14 @@ Make sure to add Firebase as a dependency using Swift Package Manager (SPM).
  FirebaseApp.configure()
         KFirebaseCrashlyticsInit.shared.doInitCrashlytics()
     ...
+```
+
+### Second in android
+
+```kotlin
+    AndroidKFirebaseCore.initialization(this)
+AndroidKFirebaseCrashlytics.init()
+
 ```
 
 ### Example code

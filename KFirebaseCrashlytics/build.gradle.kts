@@ -34,7 +34,7 @@ tasks.withType<PublishToMavenRepository> {
 extra["packageNameSpace"] = "io.github.kfirebase_crashlytics"
 extra["groupId"] = "io.github.the-best-is-best"
 extra["artifactId"] = "kfirebase-crashlytics"
-extra["version"] = "1.1.0"
+extra["version"] = "1.1.1"
 extra["packageName"] = "KFirebaseCrashlytics"
 extra["packageUrl"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics"
 extra["packageDescription"] = "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform."
@@ -105,7 +105,7 @@ kotlin {
     // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
         namespace = "io.github.kfirebase_crashlytics"
-        compileSdk = 35
+        compileSdk = 36
         minSdk = 21
     }
 
@@ -177,7 +177,7 @@ kotlin {
 
         commonTest {
             dependencies {
-                implementation(libs.kotlin.test)
+                //   implementation(libs.kotlin.test)
             }
         }
 
@@ -186,7 +186,7 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
-                implementation(project.dependencies.platform(libs.firebase.bom))
+                // implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.crashlytics)
                 implementation(libs.firebase.common.ktx)
             }
