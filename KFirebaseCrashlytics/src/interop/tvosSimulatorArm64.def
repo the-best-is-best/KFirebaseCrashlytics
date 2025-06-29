@@ -1,3 +1,3 @@
 language = Objective-C
-package = io.github.native.kfirebase_crashlytics
-headers = /Users/michelleraouf/Desktop/kmm/KFirebaseCrashlyticsApp/KFirebaseCrashlytics/src/interop/libs/tvos-arm64_x86_64-simulator/FirebaseCrashlytics.framework/Headers/FirebaseCrashlytics.h
+package = "io.github.native.kfirebase_crashlytics"
+headers = /Users/michelleraouf/Desktop/kmm/KFirebaseCrashlytics/KFirebaseCrashlytics/src/interop/libs/tvos-arm64_x86_64-simulator/FirebaseCrashlytics.framework/Headers/FirebaseCrashlytics.h

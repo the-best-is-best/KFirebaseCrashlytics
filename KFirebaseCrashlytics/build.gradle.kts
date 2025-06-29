@@ -34,7 +34,7 @@ tasks.withType<PublishToMavenRepository> {
 extra["packageNameSpace"] = "io.github.kfirebase_crashlytics"
 extra["groupId"] = "io.github.the-best-is-best"
 extra["artifactId"] = "kfirebase-crashlytics"
-extra["version"] = "1.1.1"
+extra["version"] = "1.1.2"
 extra["packageName"] = "KFirebaseCrashlytics"
 extra["packageUrl"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics"
 extra["packageDescription"] = "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform."
@@ -128,7 +128,7 @@ kotlin {
         watchosSimulatorArm64(),
     ).forEach { target ->
         target.binaries.framework {
-            baseName = packageName
+            baseName = packageName + "Core"
         }
 
         // Configure cinterop for each target
@@ -258,7 +258,7 @@ abstract class GenerateDefFilesTask : DefaultTask() {
             // Generate the content for the .def file
             val content = """
                 language = Objective-C
-                package = ${packageName.get()}
+                package = "io.github.native.kfirebase_crashlytics"
                 headers = $headerPath
             """.trimIndent()
 
