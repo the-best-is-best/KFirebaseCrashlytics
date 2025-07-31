@@ -51,7 +51,7 @@ appleMain.dependencies{
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-            export("io.github.the-best-is-best:kfirebase-crashlytics:1.1.1") //  need this
+            export("io.github.the-best-is-best:kfirebase-crashlytics:2.0.0") //  need this
         }
     }
 ```
