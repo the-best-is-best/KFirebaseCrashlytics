@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurr
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-
+    id("co.touchlab.crashkios.crashlyticslink") version "0.9.0"
     id("maven-publish")
     id("signing")
     alias(libs.plugins.maven.publish)
@@ -33,7 +33,7 @@ tasks.withType<PublishToMavenRepository> {
 extra["packageNameSpace"] = "io.github.kfirebase_crashlytics"
 extra["groupId"] = "io.github.the-best-is-best"
 extra["artifactId"] = "kfirebase-crashlytics"
-extra["version"] = "1.1.2"
+extra["version"] = "2.0.0"
 extra["packageName"] = "KFirebaseCrashlytics"
 extra["packageUrl"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics"
 extra["packageDescription"] = "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform."
@@ -131,29 +131,13 @@ kotlin {
         }
 
         // Configure cinterop for each target
+//
         target.compilations.getByName("main") {
-            val defFileName = when (target.name) {
-                "iosX64" -> "iosX64.def"
-                "iosArm64" -> "iosArm64.def"
-                "iosSimulatorArm64" -> "iosSimulatorArm64.def"
-                "tvosX64" -> "tvosX64.def"
-                "tvosArm64" -> "tvosArm64.def"
-                "tvosSimulatorArm64" -> "tvosSimulatorArm64.def"
-                "watchosX64" -> "watchosX64.def"
-                "watchosArm64" -> "watchosArm64.def"
-                "watchosSimulatorArm64" -> "watchosSimulatorArm64.def"
-                else -> throw IllegalStateException("Unsupported target: ${target.name}")
+            val firCrashlytics by cinterops.creating {
+                defFile("/Users/michelleraouf/Desktop/kmm/KFirebaseCrashlytics/KFirebaseCrashlytics/src/interop/firehase_crashlytics.def")
+                packageName = "io.github.native.kfirebase_crashlytics"
             }
 
-            val defFile = project.file("src/interop/$defFileName")
-            if (defFile.exists()) {
-                cinterops.create("FirebaseCrashlytics") {
-                    defFile(defFile)
-                    packageName = "io.github.native.kfirebase_crashlytics"
-                }
-            } else {
-                logger.warn("Def file not found for target ${target.name}: ${defFile.absolutePath}")
-            }
         }
     }
 
@@ -185,7 +169,7 @@ kotlin {
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
-                // implementation(project.dependencies.platform(libs.firebase.bom))
+                implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.crashlytics)
                 implementation(libs.firebase.common.ktx)
             }
@@ -219,52 +203,23 @@ abstract class GenerateDefFilesTask : DefaultTask() {
         interopDir.get().asFile.mkdirs()
 
         // Constants
-        val firebaseAnalyticsHeaders = "FirebaseCrashlytics.framework/Headers/FirebaseCrashlytics.h"
+        val firebaseCrashlyticsHeaders = "FirebaseCrashlytics.h"
 
-        // Map targets to their respective paths
-        val targetToPath = mapOf(
-            "iosX64" to "ios-arm64_x86_64-simulator",
-            "iosArm64" to "ios-arm64",
-            "iosSimulatorArm64" to "ios-arm64_x86_64-simulator",
-            "macosX64" to "macos-arm64_x86_64",
-            "macosArm64" to "macos-arm64_x86_64",
-            "tvosArm64" to "tvos-arm64",
-            "tvosX64" to "tvos-arm64_x86_64-simulator",
-            "tvosSimulatorArm64" to "tvos-arm64_x86_64-simulator",
-            "watchosArm64" to "watchos-arm64",
-            "watchosX64" to "watchos-arm64_x86_64-simulator",
-            "watchosSimulatorArm64" to "watchos-arm64_x86_64-simulator"
-        )
-
+        //
         // Helper function to generate header paths
-        fun headerPath(target: String): String {
-            return interopDir.dir("libs/${targetToPath[target]}/$firebaseAnalyticsHeaders").get().asFile.absolutePath
+        fun headerPath(): String {
+            return interopDir.dir("libs/$firebaseCrashlyticsHeaders").get().asFile.absolutePath
         }
 
-        // Generate headerPaths dynamically
-        val headerPaths = targetToPath.mapValues { (target, _) ->
-            headerPath(target)
-        }
-
-        // List of targets derived from targetToPath keys
-        val iosTargets = targetToPath.keys.toList()
-
-        // Loop through the targets and create the .def files
-        iosTargets.forEach { target ->
-            val headerPath = headerPaths[target] ?: return@forEach
-            val defFile = File(interopDir.get().asFile, "$target.def")
-
-            // Generate the content for the .def file
-            val content = """
+        val content = """
                 language = Objective-C
                 package = "io.github.native.kfirebase_crashlytics"
-                headers = $headerPath
+                headers = ${headerPath()}
             """.trimIndent()
+        val defFile = File(interopDir.get().asFile, "firehase_crashlytics.def")
 
-            // Write content to the .def file
-            defFile.writeText(content)
-            println("Generated: ${defFile.absolutePath} with headers = $headerPath")
-        }
+        // Write content to the .def file
+        defFile.writeText(content)
     }
 }
 // Register the task within the Gradle build

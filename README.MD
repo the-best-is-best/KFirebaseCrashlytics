@@ -5,7 +5,7 @@
     <img alt="API" src="https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat" style="max-width: 100%;">
 </a>
   <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Badge Android" />
-  <img src="https://img.shields.io/badge/iOS-13%2B-blue.svg?logo=apple" alt="iOS 13+ Badge" />
+  <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple" alt="iOS 15+ Badge" />
 
 <a href="https://github.com/the-best-is-best/"><img alt="Profile" src="https://img.shields.io/badge/github-%23181717.svg?&style=for-the-badge&logo=github&logoColor=white" height="20"/></a>
 </div>
@@ -25,11 +25,18 @@ KFirebaseCrashlytics is available on `mavenCentral()`.
 
 <br>
 
+## Version Compatibility
+
+| KFirebaseCrashlytics Version | Firebase iOS SDK | Minimum iOS Version |
+|------------------------------|------------------|---------------------|
+| 1.1.2                        | Firebase v11.x   | iOS 13+             |
+| 2.0.0                        | Firebase v12.x   | iOS 15+             |
+
 ## Installation
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.the-best-is-best:kfirebase-crashlytics:1.1.1")
+    implementation("io.github.the-best-is-best:kfirebase-crashlytics:2.0.0")
     ...
 }
 appleMain.dependencies{
