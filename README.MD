@@ -1,8 +1,8 @@
 <h1 align="center">KFirebaseCrashlytics</h1><br>
 <div align="center">
 <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
-<a href="https://android-arsenal.com/api?level=21" rel="nofollow">
-    <img alt="API" src="https://img.shields.io/badge/API-21%2B-brightgreen.svg?style=flat" style="max-width: 100%;">
+<a href="https://android-arsenal.com/api?level=23" rel="nofollow">
+    <img alt="API" src="https://img.shields.io/badge/API-23%2B-brightgreen.svg?style=flat" style="max-width: 100%;">
 </a>
   <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android" alt="Badge Android" />
   <img src="https://img.shields.io/badge/iOS-15%2B-blue.svg?logo=apple" alt="iOS 15+ Badge" />
@@ -36,7 +36,7 @@ KFirebaseCrashlytics is available on `mavenCentral()`.
 
 ```kotlin
 commonMain.dependencies {
-    implementation("io.github.the-best-is-best:kfirebase-crashlytics:2.0.0")
+    implementation("io.github.the-best-is-best:kfirebase-crashlytics:2.1.0")
     ...
 }
 appleMain.dependencies{
@@ -77,7 +77,7 @@ Make sure to add Firebase as a dependency using Swift Package Manager (SPM).
 
 ```kotlin
     AndroidKFirebaseCore.initialization(this)
-AndroidKFirebaseCrashlytics.init()
+    AndroidKFirebaseCrashlytics.init()
 
 ```
 
