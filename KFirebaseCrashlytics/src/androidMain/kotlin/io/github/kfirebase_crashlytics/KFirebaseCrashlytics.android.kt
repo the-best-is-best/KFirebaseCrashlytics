@@ -14,8 +14,28 @@ actual class KFirebaseCrashlytics {
 
 
     actual fun trackHandledException(throwable: Throwable) {
+        val message = "🔥 Critical non-fatal exception: ${throwable.message}"
 
+        // 1️⃣ Log message
+        fireCrashlytics.log(message)
+
+        // 2️⃣ Custom keys (زي iOS بالظبط)
+        fireCrashlytics.setCustomKey("severity", "fatal-level")
+        fireCrashlytics.setCustomKey(
+            "exception_type",
+            throwable::class.simpleName ?: "Unknown"
+        )
+
+        // (اختياري لكن مفيد)
+        fireCrashlytics.setCustomKey(
+            "exception_message",
+            throwable.message ?: "unknown"
+        )
+
+        // 3️⃣ Record as non-fatal exception
+        fireCrashlytics.recordException(throwable)
     }
+
 
     actual fun setUserId(userId: String) {
         fireCrashlytics.setUserId(userId)

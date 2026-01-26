@@ -11,7 +11,7 @@ plugins {
     id("co.touchlab.crashkios.crashlyticslink") version "0.9.0" apply false
 
 
-    id("com.google.gms.google-services") version "4.4.3" apply false
-    id("com.google.firebase.crashlytics") version "3.0.5" apply false
+    id("com.google.gms.google-services") version "4.4.4" apply false
+    id("com.google.firebase.crashlytics") version "3.0.6" apply false
 
 }

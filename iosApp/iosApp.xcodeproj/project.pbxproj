@@ -85,6 +85,7 @@
 				B9DA97AE2DC1472C00A4DA20 /* Frameworks */,
 				B9DA97AF2DC1472C00A4DA20 /* Resources */,
 				413E06D52DE35CCF00DF2057 /* Firebase Crashlytics */,
+				417EA6852F27E77B00389797 /* FireCrash */,
 			);
 			buildRules = (
 			);
@@ -173,6 +174,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+		417EA6852F27E77B00389797 /* FireCrash */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = FireCrash;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#!/bin/bash\nset -e\nset -o pipefail\n\n# فقط شغّل السكربت أثناء Archive (ACTION=install)\nif [[ \"$ACTION\" != \"install\" ]]; then\n  echo \"ℹ️ Skipping Crashlytics symbols upload (not Archive)\"\n  exit 0\nfi\n\nCHECK_SYMBOLS=\"${BUILD_DIR%/Build/*}/SourcePackages/check-symbols\"\n\n# تحقق من وجود الأداة وصلاحيات التشغيل\nif [ ! -x \"$CHECK_SYMBOLS\" ]; then\n  echo \"❌ check-symbols not found at: $CHECK_SYMBOLS\"\n  echo \"⚠️ For SPM, this script might be unnecessary. Consider removing it.\"\n  exit 0\nfi\n\n# تحقق من وجود مجلد dSYM\nif [ ! -d \"$DWARF_DSYM_FOLDER_PATH\" ]; then\n  echo \"❌ dSYM folder not found at: $DWARF_DSYM_FOLDER_PATH\"\n  exit 1\nfi\n\necho \"▶ Uploading Crashlytics dSYM...\"\n\n\"$CHECK_SYMBOLS\" \\\n  -p \"$DWARF_DSYM_FOLDER_PATH\" \\\n  --upload-symbols \\\n  --output-path \"$TARGET_TEMP_DIR/FirebaseCrashlytics-symbols.entab\"\n\necho \"✅ Crashlytics symbols uploaded successfully\"\n";
 		};
 		B9DA97F42DC1497100A4DA20 /* Compile Kotlin Framework */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -427,7 +446,7 @@
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 11.13.0;
+				minimumVersion = 12.8.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -1,4 +1,10 @@
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.getCurrentOperatingSystem
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.*
+import org.gradle.internal.os.OperatingSystem
+import java.io.File
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -9,43 +15,38 @@ plugins {
     alias(libs.plugins.maven.publish)
 }
 
-
 apply(plugin = "maven-publish")
 apply(plugin = "signing")
 
-
 tasks.withType<PublishToMavenRepository> {
-    val isMac = getCurrentOperatingSystem().isMacOsX
+    val isMac = OperatingSystem.current().isMacOsX
     onlyIf {
         isMac.also {
             if (!isMac) logger.error(
                 """
-                    Publishing the library requires macOS to be able to generate iOS artifacts.
-                    Run the task on a mac or use the project GitHub workflows for publication and release.
-                """
+                Publishing the library requires macOS to be able to generate iOS artifacts.
+                Run the task on a mac or use the project GitHub workflows for publication and release.
+                """ .trimIndent()
             )
         }
     }
 }
 
-
-
-extra["packageNameSpace"] = "io.github.kfirebase_crashlytics"
-extra["groupId"] = "io.github.the-best-is-best"
-extra["artifactId"] = "kfirebase-crashlytics"
-extra["version"] = "2.1.0"
-extra["packageName"] = "KFirebaseCrashlytics"
-extra["packageUrl"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics"
-extra["packageDescription"] = "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform."
-extra["system"] = "GITHUB"
-extra["issueUrl"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics/issues"
-extra["connectionGit"] = "https://github.com/the-best-is-best/KFirebaseCrashlytics.git"
-
-extra["developerName"] = "Michelle Raouf"
-extra["developerNameId"] = "MichelleRaouf"
-extra["developerEmail"] = "eng.michelle.raouf@gmail.com"
-
-
+extra.apply {
+    set("packageNameSpace", "io.github.kfirebase_crashlytics")
+    set("groupId", "io.github.the-best-is-best")
+    set("artifactId", "kfirebase-crashlytics")
+    set("version", "2.1.1")
+    set("packageName", "KFirebaseCrashlytics")
+    set("packageUrl", "https://github.com/the-best-is-best/KFirebaseCrashlytics")
+    set("packageDescription", "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform.")
+    set("system", "GITHUB")
+    set("issueUrl", "https://github.com/the-best-is-best/KFirebaseCrashlytics/issues")
+    set("connectionGit", "https://github.com/the-best-is-best/KFirebaseCrashlytics.git")
+    set("developerName", "Michelle Raouf")
+    set("developerNameId", "MichelleRaouf")
+    set("developerEmail", "eng.michelle.raouf@gmail.com")
+}
 
 mavenPublishing {
     coordinates(
@@ -53,7 +54,6 @@ mavenPublishing {
         extra["artifactId"].toString(),
         extra["version"].toString()
     )
-
     publishToMavenCentral(true)
     signAllPublications()
 
@@ -83,10 +83,7 @@ mavenPublishing {
             }
         }
     }
-
 }
-
-
 
 signing {
     useGpgCmd()
@@ -97,24 +94,15 @@ val packageNameSpace = extra["packageNameSpace"].toString()
 val packageName = extra["packageName"].toString()
 
 kotlin {
-
-
-    // Target declarations - add or remove as needed below. These define
-    // which platforms this KMP module supports.
-    // See: https://kotlinlang.org/docs/multiplatform-discover-project.html#targets
     androidLibrary {
-        namespace = "io.github.kfirebase_crashlytics"
+        namespace = packageNameSpace
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 
-    // For iOS targets, this is also where you should
-    // configure native binary output. For more information, see:
-    // https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks
+    val firebaseXCFrameworkDir = project.layout.projectDirectory.dir("src/interop/libs/FirebaseCrashlytics.xcframework")
+    val packageNameProp = packageName
 
-    // A step-by-step guide on how to include this library in an XCode
-    // project can be found here:
-    // https://developer.android.com/kotlin/multiplatform/migrate
     listOf(
         iosX64(),
         iosArm64(),
@@ -122,108 +110,128 @@ kotlin {
         tvosX64(),
         tvosArm64(),
         tvosSimulatorArm64(),
-        watchosX64(),
+//        watchosX64(),
         watchosArm64(),
-        watchosSimulatorArm64(),
+        watchosSimulatorArm64()
     ).forEach { target ->
+
+        val targetName = target.name
+
+        val generateDefTask = tasks.register<GenerateDefFilesTask>("generateDefFile${targetName.replaceFirstChar { it.uppercase() }}") {
+            packageName.set(packageNameProp)
+            this.targetName.set(targetName)
+            this.xcframeworkDir.set(firebaseXCFrameworkDir)
+            this.outputFile.set(project.layout.buildDirectory.file("generated/def/firebase_crashlytics_${targetName}.def"))
+        }
+
         target.binaries.framework {
             baseName = packageName + "Core"
         }
 
-        // Configure cinterop for each target
-//
-        target.compilations.getByName("main") {
+        target.compilations.getByName("main").apply {
             val firCrashlytics by cinterops.creating {
-                defFile("/Users/michelleraouf/Desktop/kmm/KFirebaseCrashlytics/KFirebaseCrashlytics/src/interop/firehase_crashlytics.def")
+                definitionFile.set(generateDefTask.flatMap { it.outputFile })
                 packageName = "io.github.native.kfirebase_crashlytics"
             }
-
+            val compileTaskName = "compileKotlin${targetName.replaceFirstChar { it.uppercase() }}"
+            tasks.named(compileTaskName).configure {
+                dependsOn(generateDefTask)
+            }
         }
     }
 
-
-    // Source set declarations.
-    // Declaring a target automatically creates a source set with the same name. By default, the
-    // Kotlin Gradle Plugin creates additional source sets that depend on each other, since it is
-    // common to share sources between related targets.
-    // See: https://kotlinlang.org/docs/multiplatform-hierarchy.html
     sourceSets {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
-                // Add KMP dependencies here
                 api(libs.kfirebase.core)
                 api(libs.touchlab.crashlytics)
-
             }
         }
-
         commonTest {
             dependencies {
-                //   implementation(libs.kotlin.test)
+                // Add your test dependencies here
             }
         }
-
         androidMain {
             dependencies {
-                // Add Android-specific dependencies here. Note that this source set depends on
-                // commonMain by default and will correctly pull the Android artifacts of any KMP
-                // dependencies declared in commonMain.
                 implementation(project.dependencies.platform(libs.firebase.bom))
                 implementation(libs.firebase.crashlytics)
                 implementation(libs.firebase.common.ktx)
             }
         }
-
         appleMain {
             dependencies {
-                // Add iOS-specific dependencies here. This a source set created by Kotlin Gradle
-                // Plugin (KGP) that each specific iOS target (e.g., iosX64) depends on as
-                // part of KMP’s default source set hierarchy. Note that this source set depends
-                // on common by default and will correctly pull the iOS artifacts of any
-                // KMP dependencies declared in commonMain.
+                // Add iOS specific dependencies here if needed
             }
         }
     }
-
 }
-
 
 abstract class GenerateDefFilesTask : DefaultTask() {
 
     @get:Input
     abstract val packageName: Property<String>
 
-    @get:OutputDirectory
-    abstract val interopDir: DirectoryProperty
+    @get:Input
+    abstract val targetName: Property<String>
+
+    @get:InputDirectory
+    abstract val xcframeworkDir: DirectoryProperty
+
+    @get:OutputFile
+    abstract val outputFile: RegularFileProperty
 
     @TaskAction
     fun generate() {
-        // Ensure the directory exists
-        interopDir.get().asFile.mkdirs()
+        val target = targetName.get()
+        val xcDir = xcframeworkDir.get()
 
-        // Constants
-        val firebaseCrashlyticsHeaders = "FirebaseCrashlytics.h"
+        val subfolder = when (target) {
+            "iosArm64" -> "ios-arm64"
+            "iosX64" -> "ios-arm64_x86_64-simulator"
+            "iosSimulatorArm64" -> "ios-arm64_x86_64-simulator"
+            "tvosArm64" -> "tvos-arm64"
+            "tvosX64" -> "tvos-arm64_x86_64-simulator"
+            "tvosSimulatorArm64" -> "tvos-arm64_x86_64-simulator"
+            "watchosArm64" -> "watchos-arm64_arm64_32"
+//            "watchosX64" -> "watchos-arm64_x86_64-simulator"
+            "watchosSimulatorArm64" -> "watchos-arm64_x86_64-simulator"
+            else -> throw IllegalArgumentException("Unknown target: $target")
+        }
 
-        //
-        // Helper function to generate header paths
-        fun headerPath(): String {
-            return interopDir.dir("libs/$firebaseCrashlyticsHeaders").get().asFile.absolutePath
+        val frameworkFile = xcDir.asFile.resolve("$subfolder/FirebaseCrashlytics.framework")
+        if (!frameworkFile.exists()) {
+            throw IllegalStateException("Expected framework not found: ${frameworkFile.absolutePath}")
+        }
+
+        val frameworkPath = frameworkFile.absolutePath
+        val headerPath = "$frameworkPath/Headers/FirebaseCrashlytics.h"
+        val headerFile = File(headerPath)
+
+        if (!headerFile.exists()) {
+            throw IllegalStateException("Expected header not found: $headerPath")
         }
 
         val content = """
-                language = Objective-C
-                package = "io.github.native.kfirebase_crashlytics"
-                headers = ${headerPath()}
-            """.trimIndent()
-        val defFile = File(interopDir.get().asFile, "firehase_crashlytics.def")
+            language = Objective-C
+            package = "${packageName.get()}"
+            headers = $headerPath
+            compilerOpts = -F$frameworkPath
+            linkerOpts = -F$frameworkPath
+        """ .trimIndent()
 
-        // Write content to the .def file
+        val defFile = outputFile.get().asFile
+        defFile.parentFile.mkdirs()
         defFile.writeText(content)
+
+        logger.lifecycle("Generated .def file for $target at ${defFile.absolutePath}")
     }
 }
-// Register the task within the Gradle build
-tasks.register<GenerateDefFilesTask>("generateDefFiles") {
-    packageName.set("io.github.native.kfirebase_crashlytics")
-    interopDir.set(project.layout.projectDirectory.dir("src/interop"))
+
+// Aggregator task that depends on all other GenerateDefFilesTask tasks
+tasks.register("generateDefFiles") {
+    group = "interop"
+    description = "Generates all .def files for all targets"
+    dependsOn(tasks.withType<GenerateDefFilesTask>())
 }
