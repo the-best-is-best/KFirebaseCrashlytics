@@ -36,7 +36,7 @@ extra.apply {
     set("packageNameSpace", "io.github.kfirebase_crashlytics")
     set("groupId", "io.github.the-best-is-best")
     set("artifactId", "kfirebase-crashlytics")
-    set("version", "2.1.1")
+    set("version", "2.1.2")
     set("packageName", "KFirebaseCrashlytics")
     set("packageUrl", "https://github.com/the-best-is-best/KFirebaseCrashlytics")
     set("packageDescription", "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform.")
