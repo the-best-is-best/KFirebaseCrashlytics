@@ -28,5 +28,6 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp")
+include(":sharedUI")
 include(":KFirebaseCrashlytics")
+include(":androidApp")
