@@ -65,6 +65,10 @@ Make sure to add Firebase as a dependency using Swift Package Manager (SPM).
 3. Enter Firebase repository URL: `https://github.com/firebase/firebase-ios-sdk`
 4. Choose `FirebaseCrashlytics` and add it to your project.
 
+### 💡 Pro Tip: Better iOS Crash Reports
+By default, Kotlin exceptions on iOS can be hard to read in the Firebase Console.
+We highly recommend using [NSExceptionKt](https://github.com/rickclephas/NSExceptionKt) alongside this package to get clear, readable Kotlin stack traces.
+
 ### First in ios
 
 ```swift

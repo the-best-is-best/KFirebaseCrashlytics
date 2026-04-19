@@ -38,7 +38,6 @@ kotlin {
             implementation(libs.ui.tooling.preview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.touchlab.crashlytics)
             implementation(libs.kfirebase.analytics)
             api(projects.kFirebaseCrashlytics)
 

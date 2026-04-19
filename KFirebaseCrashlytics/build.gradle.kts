@@ -9,7 +9,6 @@ import java.io.File
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
-    id("co.touchlab.crashkios.crashlyticslink") version "0.9.0"
     id("maven-publish")
     id("signing")
     alias(libs.plugins.maven.publish)
@@ -36,7 +35,7 @@ extra.apply {
     set("packageNameSpace", "io.github.kfirebase_crashlytics")
     set("groupId", "io.github.the-best-is-best")
     set("artifactId", "kfirebase-crashlytics")
-    set("version", "2.1.2")
+    set("version", "3.0.0")
     set("packageName", "KFirebaseCrashlytics")
     set("packageUrl", "https://github.com/the-best-is-best/KFirebaseCrashlytics")
     set("packageDescription", "KFirebaseCrashlytics is a Kotlin Multiplatform Mobile (KMM) package designed to provide seamless integration with Firebase Crashlytics across both Android and iOS platforms. This package allows developers to easily track user events, monitor app performance, and gain insights into user behavior through a unified API, without duplicating code for each platform.")
@@ -145,7 +144,6 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.stdlib)
                 api(libs.kfirebase.core)
-                api(libs.touchlab.crashlytics)
             }
         }
         commonTest {

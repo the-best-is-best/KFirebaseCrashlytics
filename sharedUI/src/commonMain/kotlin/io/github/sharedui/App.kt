@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import co.touchlab.crashkios.crashlytics.CrashlyticsKotlin
 import io.github.kfirebase_crashlytics.KFirebaseCrashlytics
 
 @Composable
@@ -86,14 +85,6 @@ fun App() {
                 Text("Record Exception with trackHandled")
             }
 
-            ElevatedButton(
-                onClick = {
-                    CrashlyticsKotlin.sendHandledException(Exception("kotlin exception"))
-                }
-            )
-            {
-                Text("Record Exception with crashlytics iso")
-            }
         }
     }
 }
